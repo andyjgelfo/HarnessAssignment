@@ -1,0 +1,77 @@
+/*Set background color of the page to a light blue*/
+*, body
+{
+    background-color: rgb(213, 236, 255);
+}
+
+/*Add border to table */
+.myTable
+{
+    border: 5px solid rgb(16, 0, 94);
+    border-radius: 15px;
+    border-collapse: collapse;
+}
+
+/*Make tabel border curved at the top corners*/
+.tableDiv
+{
+    border-radius: 15px;
+}
+
+/*Center and enlarge main heading*/
+h1
+{
+    text-align: center;
+    font-size: 3rem;
+}
+
+/*Class to align specific text to the right*/
+.rightAlign
+{
+    text-align: right;
+}
+
+/*Center-align table headings and data*/
+th, td
+{
+    text-align: center;
+    vertical-align: middle;
+}
+
+/*Left-align the description data text specifically*/
+#descriptionCol
+{
+    text-align: left;
+}
+
+/*Center and pad the text that shows how far we are in the dataset*/
+#curDisplay, #curDisplayBottom
+{
+    vertical-align: middle;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+}
+
+/*Customize the entry box to go to a specific page with border, padding, and center-alignment*/
+#goToItem, #goToItemBottom
+{
+    border-radius: 8px;
+    border: 2.2px solid rgb(16, 0, 94);
+    padding: 15px; 
+    width: 200px;
+    height: 15px;
+    vertical-align: middle;
+}
+
+/*When these entry boxes are clicked on, give them a blue outline*/
+#goToItem:focus, #goToItemBottom:focus
+{
+    border: 2.2px solid rgb(16, 0, 94);
+    outline: solid 1.2px rgb(10, 118, 249);
+}
+
+/*Align all buttons vertically to the center*/
+.btn
+{
+    vertical-align: middle;
+}

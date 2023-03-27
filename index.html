@@ -3,9 +3,7 @@
 <html lang="en">
 
     <head>
-
         <title>Harness NVD Display</title>
-
         <meta charset="utf-8">
 
         <!--Ensure proper rendering/touch zooming for mobile-->
@@ -16,7 +14,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" ></script>
 
         <!--Link in my CSS file-->
-        <link rel="stylesheet" href="style.css" >
+        <link rel="stylesheet" href="styles.css" >
 
         <!--Link in my JavaScript file-->
         <script type="text/javascript" src="code.js"></script>
@@ -24,44 +22,40 @@
         <!--Link in any necessary fonts-->
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Cabin&display=swap');
-
-            
-
         </style>
-
-
-
     </head>
 
+
+    <!--On page load, populate the table with the first set of data-->
     <body onload="getJson(1, 5)">
 
-
+        <!--Container for Harness Logo to reside-->
         <div class="container-fluid">
             <div class="row">
                 <div class="col">
-                    <br>
+                    <br />
                     <img src="HarnessLogo.svg" class="img-fluid" alt="Harness Logo" width="12%" height="12%">   
                 </div>
             </div>
-
         </div>
 
         <!--Div where main content of the webpage will reside-->
         <div class="container">
 
+            <!--Main heading-->
             <div class="row">
                 <div class="col">
                     <br />
-
-
                     <h1>NVD Display</h1>
                 </div>
             </div>
 
-
             <br /><br />
 
+            <!--Row for top table controls to reside-->
             <div class="row">
+
+                <!--Left half of row: Prev, Next, and Progress-->
                 <div class="col-6">
                     <button class="btn btn-outline-primary" onclick="decreaseRange()">Prev</button>
                     &nbsp;
@@ -69,11 +63,13 @@
                     <span id="curDisplay"></span>
                 </div>
 
+                <!--Right half of row: Entry Box to go to Specific Item Number-->
                 <div class="col-6 rightAlign">
                     <label for="goToItem">Go to Item Number: </label>
                     <input type="text" id="goToItem" name="goToItem" placeholder="Item No.">
                     <button class="btn btn-outline-success" onclick="goToItem(document.getElementById('goToItem').value)">Go!</button>
                 </div>
+
             </div>
 
             <br />
@@ -102,7 +98,7 @@
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td id="descriptionCol"></td>
+                            <td id="descriptionCol"></td> <!--Description col needs its own ID to be left-aligned-->
                         </tr>
                         <tr id="rowTwo">
                             <td></td>
@@ -131,29 +127,39 @@
                             <td></td>
                             <td></td>
                             <td id="descriptionCol"></td>
-                        </tr>
-                        
+                        </tr>   
                     </tbody>
-
                 </table>
+            </div>
 
+            <!--Row 1 for bottom table controls to reside-->
+            <div class="row">
+
+                <!--Prev, Next, and Progress-->
+                <div class="col">
+                    <button class="btn btn-outline-primary" onclick="decreaseRange()">Prev</button>
+                    &nbsp;
+                    <button class="btn btn-outline-primary" onclick="increaseRange()">Next</button>
+                    <span id="curDisplayBottom"></span>
+                </div>
             </div>
 
             <br />
-            <button class="btn btn-outline-primary" onclick="decreaseRange()">Prev</button>
-            &nbsp;
-            <button class="btn btn-outline-primary" onclick="increaseRange()">Next</button>
-            <span id="curDisplayBottom"></span>
 
-            <br /><br />
-            <label for="goToItemBottom" class="entryBox">Go to Item Number: </label>
-            <input type="text" id="goToItemBottom" name="goToItemBottom" placeholder="Item No.">
-            <button class="btn btn-outline-success" onclick="goToItem(document.getElementById('goToItemBottom').value)">Go!</button>
+            <!--Row 2 for bottom table controls to reisde-->
+            <div class="row">
+
+                <!--Entry box to go to specific item-->
+                <div class="col">
+                    <label for="goToItemBottom" class="entryBox">Go to Item Number: </label>
+                    <input type="text" id="goToItemBottom" name="goToItemBottom" placeholder="Item No.">
+                    <button class="btn btn-outline-success" onclick="goToItem(document.getElementById('goToItemBottom').value)">Go!</button>
+                </div>
+            </div>
+
         </div>
 
         <br/><br/>
-
-
 
     </body>
 

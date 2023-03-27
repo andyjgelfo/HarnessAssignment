@@ -5,24 +5,25 @@ const url = "nvdcve-1.1-recent.json";
 let curRangeMin = 1;
 let curRangeMax = 5;
 let curRange = 5;
-let itemCount = 999; //Will be updated after first JSON call
+let itemCount = 999; //Will be updated after first JSON call to accurately reflect the count
 
-
+//Function to obtain the JSON and parse its data at specific range values
 function getJson(rangeStart, rangeStop)
 {
+    //Fetch JSON at the local URL
     fetch(url)
         .then(res => res.json())
         .then(data => {
-            //console.log(data.CVE_Items[0].cve.CVE_data_meta.ID);
-
-            //updateTableRow(1, 0, data);
-
+            
+            //Obtain accurate itemCount
             itemCount = data.CVE_Items.length;
 
+            //Ensure extra table rows are not displayed if we are on the last page and there are less items than the range
             if(rangeStop == itemCount)
             {
                 ifLastPage();
             }
+            //Ensure these table rows are restored if coming from the last page with fewer items
             else if(rangeStop == ceilToNearestRangeVal(itemCount) - curRange)
             {
                 ifComingFromLastPage();
@@ -31,12 +32,9 @@ function getJson(rangeStart, rangeStop)
             //Update the table with the current range of JSON items (-1 due to zero-indexing)
             updateTableVals(rangeStart - 1, rangeStop - 1, data);
 
-            document.getElementById("curDisplay").innerHTML = `Displaying items ${curRangeMin} through ${curRangeMax} out of ${data.CVE_Items.length}`;
-            document.getElementById("curDisplayBottom").innerHTML = `Displaying items ${curRangeMin} through ${curRangeMax} out of ${data.CVE_Items.length}`;
-
-            console.log(` Displaying items ${curRangeMin} through ${curRangeMax} out of ${data.CVE_Items.length}`);
-
-
+            //Display what number items are being shown and the total count
+            document.getElementById("curDisplay").innerHTML = `Displaying items <strong>${curRangeMin}</strong> through <strong>${curRangeMax}</strong> out of <strong>${data.CVE_Items.length}</strong>`;
+            document.getElementById("curDisplayBottom").innerHTML = `Displaying items <strong>${curRangeMin}</strong> through <strong>${curRangeMax}</strong> out of <strong>${data.CVE_Items.length}</strong>`;
         })
         .catch((error) => {
             console.error(error);
@@ -74,18 +72,13 @@ function getDescriptionValue(itemNumber, parsedJson)
     return parsedJson.CVE_Items[itemNumber].cve.description.description_data[0].value;
 }
 
-console.log(getCVENum(0));
-console.log(getPublishedDate(0));
-console.log(getLastModifiedDate(0));
-console.log(getDescriptionLang(0));
-console.log(getDescriptionValue(0));
-
-
+//Function to update a table Row with its newly obtained JSON Data
 function updateTableRow(rowNum, itemNumber, parsedJson)
 {
-
+    //Get the table from the HTML document
     let nvdTable = document.getElementById("nvdTable");
 
+    //Update its cells with data from the JSON file
     nvdTable.rows[rowNum].cells[0].innerHTML = getCVENum(itemNumber, parsedJson);
     nvdTable.rows[rowNum].cells[1].innerHTML = getPublishedDate(itemNumber, parsedJson);
     nvdTable.rows[rowNum].cells[2].innerHTML = getLastModifiedDate(itemNumber, parsedJson);
@@ -93,26 +86,28 @@ function updateTableRow(rowNum, itemNumber, parsedJson)
     nvdTable.rows[rowNum].cells[4].innerHTML = getDescriptionValue(itemNumber, parsedJson);
 }
 
+//Function to update the table as a Whole with its JSON data
 function updateTableVals(newRangeMin, newRangeMax, parsedJson)
 {
     //To advance along table rows
     let rowCount = 1;
 
+    //Loop through the range
     for(let i = newRangeMin; i <= newRangeMax; i++)
-    {
+    {   
+        //Update each row
         updateTableRow(rowCount, i, parsedJson);
-
-        console.log(`row ${rowCount} changed, item number ${i}. min is ${newRangeMin} and max is ${newRangeMax}`);
 
         //Go to next row
         rowCount++;
     }
 }
 
+//Function to advance to the Next page by increasing the current range minimum and maximum
 function increaseRange()
 {
 
-    //If the next page has the full range of items
+    //If the next page has the full range of items (5)
     if((curRangeMax + curRange) < itemCount)
     {
         //Add the range to the current min and max values
@@ -122,7 +117,7 @@ function increaseRange()
         //Get the JSON data for these items
         getJson(curRangeMin, curRangeMax);
     }
-    //If we have reached the end of the item list
+    //If we have reached the end of the item list and there are no more to obtain
     else if(curRangeMax == itemCount)
     {
         //Do not get the JSON data for these items
@@ -138,55 +133,56 @@ function increaseRange()
         //Get the JSON data for these items
         getJson(curRangeMin, curRangeMax);
     }
-    
-
 }
 
+//Function to go back to the Previous page by decreasing the current range minimum and maximum
 function decreaseRange()
 {
-
     //Ensure that decreasing the range will not go out of scope
     if(curRangeMin - curRange > 0 && curRangeMax != itemCount)
     {
+        //Decrease range values
         curRangeMin -= curRange;
         curRangeMax -= curRange;
 
+        //Obtain JSON data for this new range
         getJson(curRangeMin, curRangeMax);
 
-
     }
+    //If the current maximum is the final item of the data
     else if(curRangeMax == itemCount)
     {
+        //Decrease min range value as normal
         curRangeMin -= curRange;
+
+        //Decrease max range value from the next highest range value (multiple of 5 in this case)
         curRangeMax = ceilToNearestRangeVal(curRangeMax) - curRange;
 
+        //Obtain JSON data for this new range
         getJson(curRangeMin, curRangeMax);
     }
+    //If decreasing the range will go out of scope
     else
     {
         alert("No previous records to display.")
     }
 }
 
+//Function to round to the next highest multiple of the range value
 function ceilToNearestRangeVal(numToRound)
 {
-
-    console.log(numToRound);
-
-    console.log(Math.ceil(Number(numToRound)/curRange) * curRange);
-
-
-
     return Math.ceil(Number(numToRound)/curRange) * curRange;
 }
 
+//Function to go to a specific item number when the user types it in
 function goToItem(itemNumber)
 {
+    //Ensure that the typed number is a valid integer that isn't out of scope
     if(itemNumber <= 0)
     {
         alert("There is no item to display at that number.")
     }
-    else if(itemNumber > itemCount) //item is out of range in the positive dir
+    else if(itemNumber > itemCount)
     {
         alert("There is no item to display at that number.")
     }
@@ -196,22 +192,25 @@ function goToItem(itemNumber)
     }
     else
     {
+        //If we are coming from the last page, restore rows
+        if(curRangeMax != ceilToNearestRangeVal(curRangeMax))
+        {
+            ifComingFromLastPage();
+        }
+
+        //Get the minimum and maximum from this number
         curRangeMax = ceilToNearestRangeVal(itemNumber);
         curRangeMin = (curRangeMax + 1) - curRange;
 
-        console.log(curRangeMax);
-        console.log(curRangeMin);
-
+        //If this number is on the last page of data, ensure the max isn't out of scope
         if(itemCount > curRangeMin && itemCount < curRangeMax)
         {
             curRangeMax = itemCount;
         }
 
-        console.log(itemCount);
-
+        //Obtain JSON data for this new range
         getJson(curRangeMin, curRangeMax);
     }
-
 }
 
 //Function to delete a row in case we don't have the full range of items to display
@@ -226,38 +225,43 @@ function restoreRow(rowId)
     document.getElementById(rowId).innerHTML = "<td></td><td></td><td></td><td></td><td id='descriptionCol'></td>";
 }
 
+//Function to temporarily delete extra rows if on the last page of data without a full range
 function ifLastPage()
 {
-   
+    
+    //Get the number of rows that this page should have
     let numRows = (curRangeMax - curRangeMin) + 1;
 
+    //Switch based on the number of rows it should have
     switch(numRows)
     {
-            case 1:
-                delRow("rowTwo");
-                delRow("rowThree");
-                delRow("rowFour");
-                delRow("rowFive");
-                break;
-            case 2:
-                delRow("rowThree");
-                delRow("rowFour");
-                delRow("rowFive");
-                break;
-            case 3:
-                delRow("rowFour");
-                delRow("rowFive");
-                break;
-            case 4:
-                delRow("rowFive");
-                break;
-            default:
-                break;
+        //Delete any unnecessary rows
+        case 1:
+            delRow("rowTwo");
+            delRow("rowThree");
+            delRow("rowFour");
+            delRow("rowFive");
+            break;
+        case 2:
+            delRow("rowThree");
+            delRow("rowFour");
+            delRow("rowFive");
+            break;
+        case 3:
+            delRow("rowFour");
+            delRow("rowFive");
+            break;
+        case 4:
+            delRow("rowFive");
+            break;
+        default:
+            break;
             
     }
     
 }
 
+//Function to restore any rows that were deleted when viewing the last page
 function ifComingFromLastPage()
 {
     restoreRow("rowTwo");
